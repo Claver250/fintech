@@ -25,6 +25,11 @@ app.use(logger);
 app.use('/api/auth', authRoutes);
 app.use('/api/wallet', accountRoutes);
 
+// Health Check
+app.get('/', (req, res) => {
+    res.status(200).json({ message: "FINTECH API is running smoothly." });
+});
+
 app.listen(PORT, async () => {
     try {
         await sequelize.authenticate();
