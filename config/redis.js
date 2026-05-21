@@ -1,27 +1,25 @@
 const Redis = require('ioredis');
 
-// Use environment variables for production security
-const redisConfig = {
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    port: process.env.REDIS_PORT || 6379,
-    password: process.env.REDIS_PASSWORD || null,
-    retryStrategy(times) {
-        // Retry connection after a delay, maxing out at 2 seconds
-        const delay = Math.min(times * 50, 2000);
-        return delay;
-    },
-    maxRetriesPerRequest: null // Essential for long-lived processes
-};
+// Connect via the monolithic URL string if present (Render), otherwise fall back to host object settings
+const redis = process.env.REDIS_URL 
+    ? new Redis(process.env.REDIS_URL, { maxRetriesPerRequest: null }) 
+    : new Redis({
+        host: process.env.REDIS_HOST || '127.0.0.1',
+        port: process.env.REDIS_PORT || 6379,
+        password: process.env.REDIS_PASSWORD || null,
+        maxRetriesPerRequest: null,
+        retryStrategy(times) {
+            return Math.min(times * 50, 2000);
+        }
+    });
 
-const redis = new Redis(redisConfig);
-
-// Event Listeners for Monitoring
+// Event Monitoring Listeners
 redis.on('connect', () => {
-    console.log('✅ Redis client connected');
+    console.log('✅ Redis client successfully connected to the cluster!');
 });
 
 redis.on('error', (err) => {
-    console.error('❌ Redis connection error:', err);
+    console.error('❌ Redis operational connection fault encountered:', err.message || err);
 });
 
 module.exports = redis;
