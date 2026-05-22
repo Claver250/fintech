@@ -6,8 +6,7 @@ const sequelize = require('../config/database');
 const withdrawFunds = async (req, res) => {
     console.log("--- DEBUGGING WITHDRAWAL AUTH ---");
     
-    const accountId = req.params.id;
-    const { amount } = req.body;
+    const {accountID, amount } = req.body;
     
     // 1. Authenticate identity mapping context from your middleware
     const authenticatedUserId = req.user?.userID;
@@ -33,7 +32,7 @@ const withdrawFunds = async (req, res) => {
         // 2. Fetch Account using row-locking and verify user ownership
         const account = await Account.findOne({
             where: {
-                accountID: accountId, // Make sure this column name matches your Account schema case (accountID vs id)
+                accountID: accountID, // Make sure this column name matches your Account schema case (accountID vs id)
                 userID: authenticatedUserId // 🛡️ Safety check: Ensures users can only withdraw from their own account
             },
             transaction: t,
@@ -60,7 +59,7 @@ const withdrawFunds = async (req, res) => {
         const uniqueTxReference = `TXN-WIT-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
         await Transaction.create({
-            accountID: accountId, // Make sure column name casing matches your Transaction model description
+            accountID: account.accountID, // Make sure column name casing matches your Transaction model description
             type: 'withdrawal',
             amount: withdrawalAmount,
             description: `ATM/Online cash withdrawal`,
