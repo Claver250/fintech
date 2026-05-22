@@ -54,7 +54,8 @@ exports.signUp = async (req, res) => {
         // Return a 202 Accepted status - indicating the action is pending the OTP step
         return res.status(202).json({ 
             message: 'Registration initiated. An OTP has been sent to your phone number.', 
-            reference
+            reference,
+            otp
         });
 
     } catch (error) {
