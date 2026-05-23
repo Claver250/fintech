@@ -58,7 +58,7 @@ exports.getAccounts = async(req, res) => {
 
 exports.getAccountsById = async (req, res) => {
     try {
-        const {accountID} = req.params;
+        const {accountID} = req.body;
 
         const account = await Account.findOne({
             where: {accountID: accountID},
