@@ -61,7 +61,7 @@ exports.getAccountsById = async (req, res) => {
         const {accountID} = req.params;
 
         const account = await Account.findOne({
-            where: {accountID},
+            where: {accountID: accountID},
             // include: {
             //     model: User,
             //     attributes: ['userID', 'name', 'email']
